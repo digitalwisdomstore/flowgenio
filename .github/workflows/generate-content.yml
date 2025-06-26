@@ -1,0 +1,43 @@
+name: Generate Content
+
+on:
+  schedule:
+    - cron: '0 9 * * *'     # Cada día a las 09:00 UTC
+  workflow_dispatch:       # También manualmente desde UI
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install openai js-yaml
+
+      - name: Generate posts
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: node scripts/generatePosts.js
+
+      - name: Commit & push new posts
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add content/blog/*.mdx
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: auto-generate posts from editorial calendar"
+            git push
+          else
+            echo "No new posts to commit."
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
