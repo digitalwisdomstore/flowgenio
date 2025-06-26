@@ -2,7 +2,7 @@
 # Definimos fecha, slug, título y tipo (post, newsletter, tutorial...)
 # Puedes añadir más campos: tags, autor, estado (borrador/published)
 
-- date: "2025-07-01"
+- date: "2025-06-01"
   slug: "lanzamiento-flowgenio-saas"
   title: "Lanzamiento oficial de FLOWgenio SaaS"
   type: post
