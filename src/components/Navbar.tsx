@@ -1,4 +1,3 @@
-// src/components/Navbar.tsx
 import Link from 'next/link';
 
 export default function Navbar() {
@@ -9,6 +8,9 @@ export default function Navbar() {
           FLOWgenio SaaS
         </Link>
         <div className="space-x-4">
+          <Link href="/blog" className="hover:underline">
+            Blog
+          </Link>
           <Link href="/auth/login" className="hover:underline">
             Login
           </Link>
