@@ -1,0 +1,18 @@
+# content/editorial-calendar.yml
+# Definimos fecha, slug, título y tipo (post, newsletter, tutorial...)
+# Puedes añadir más campos: tags, autor, estado (borrador/published)
+
+- date: "2025-07-01"
+  slug: "lanzamiento-flowgenio-saas"
+  title: "Lanzamiento oficial de FLOWgenio SaaS"
+  type: post
+
+- date: "2025-07-08"
+  slug: "tutorial-integracion-paypal"
+  title: "Cómo integrar PayPal en tu sitio Next.js"
+  type: tutorial
+
+- date: "2025-07-15"
+  slug: "newsletter-julio"
+  title: "Novedades de FLOWgenio – Julio 2025"
+  type: newsletter
