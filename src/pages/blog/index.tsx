@@ -1,8 +1,9 @@
+// src/pages/blog/index.tsx
 import fs from 'fs';
 import path from 'path';
 import Link from 'next/link';
 import { GetStaticProps, NextPage } from 'next';
-import yaml from 'js-yaml';
+import matter from 'gray-matter';
 
 interface PostItem {
   slug: string;
@@ -38,25 +39,23 @@ const BlogIndex: NextPage<BlogIndexProps> = ({ posts }) => (
 
 export default BlogIndex;
 
-export const getStaticProps: GetStaticProps = async () => {
+export const getStaticProps: GetStaticProps<BlogIndexProps> = async () => {
   const blogDir = path.join(process.cwd(), 'content/blog');
   const filenames = fs.readdirSync(blogDir).filter((f) => f.endsWith('.mdx'));
 
   const posts: PostItem[] = filenames.map((filename) => {
-    const filePath = path.join(blogDir, filename);
-    const source = fs.readFileSync(filePath, 'utf8');
-    const parts = source.split('---\n');
-    const rawFM = parts[1];
-    const frontMatter = yaml.load(rawFM) as any;
+    const fullPath = path.join(blogDir, filename);
+    const fileContents = fs.readFileSync(fullPath, 'utf8');
+    const { data } = matter(fileContents);
+
     return {
       slug: filename.replace(/\.mdx$/, ''),
-      title: frontMatter.title,
-      date: frontMatter.date,
-      type: frontMatter.type,
+      title: data.title as string,
+      date: data.date as string,
+      type: data.type as string,
     };
   });
 
-  // Ordenar por fecha descendente
   posts.sort((a, b) => (a.date < b.date ? 1 : -1));
 
   return { props: { posts } };

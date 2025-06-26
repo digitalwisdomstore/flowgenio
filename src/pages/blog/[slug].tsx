@@ -1,11 +1,11 @@
 // src/pages/blog/[slug].tsx
 import fs from 'fs';
 import path from 'path';
-import yaml from 'js-yaml';
 import { GetStaticPaths, GetStaticProps, NextPage } from 'next';
 import { MDXRemote, MDXRemoteSerializeResult } from 'next-mdx-remote';
 import { serialize } from 'next-mdx-remote/serialize';
 import remarkGfm from 'remark-gfm';
+import matter from 'gray-matter';
 
 interface BlogPostProps {
   source: MDXRemoteSerializeResult;
@@ -33,26 +33,16 @@ export const getStaticPaths: GetStaticPaths = async () => {
     .map((filename) => ({
       params: { slug: filename.replace(/\.mdx$/, '') },
     }));
-
   return { paths, fallback: false };
 };
 
-export const getStaticProps: GetStaticProps = async ({ params }) => {
+export const getStaticProps: GetStaticProps<BlogPostProps> = async ({ params }) => {
   const slug = params?.slug as string;
   const filePath = path.join(process.cwd(), 'content/blog', `${slug}.mdx`);
-  const source = fs.readFileSync(filePath, 'utf8');
+  const fileContents = fs.readFileSync(filePath, 'utf8');
 
-  // Separar frontMatter y contenido
-  const parts = source.split('---\n');
-  // parts = ["", "date: ...\ntitle: ...", "contenido MDX..."]
-  const rawFM = parts[1];
-  const content = parts.slice(2).join('---\n');
-
-  const frontMatter = yaml.load(rawFM) as {
-    title: string;
-    date: string;
-    type: string;
-  };
+  // matter separa frontMatter y contenido
+  const { data, content } = matter(fileContents);
 
   const mdxSource = await serialize(content, {
     mdxOptions: {
@@ -63,7 +53,11 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   return {
     props: {
       source: mdxSource,
-      frontMatter,
+      frontMatter: {
+        title: data.title as string,
+        date: data.date as string,
+        type: data.type as string,
+      },
     },
   };
 };
